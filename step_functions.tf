@@ -25,6 +25,22 @@ resource "aws_sfn_state_machine" "app" {
               }
             }
           },
+          "Next" : "Main"
+        },
+        "Main" : {
+          "Type" : "Wait",
+          "Seconds" : 10,
+          "Next" : "Unlock"
+        },
+        "Unlock" : {
+          "Type" : "Task",
+          "Resource" : "arn:aws:states:::dynamodb:deleteItem",
+          "Parameters" : {
+            "TableName" : aws_dynamodb_table.app.name,
+            "Key" : {
+              "name" : "session_a"
+            }
+          },
           "Next" : "Success"
         },
         "Success" : {
